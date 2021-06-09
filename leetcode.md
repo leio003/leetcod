@@ -263,3 +263,34 @@ public:
 };
 ```
 
+209 长度最小的子数组
+
+给定一个含有 n 个正整数的数组和一个正整数 target 。
+
+找出该数组中满足其和 ≥ target 的长度最小的 连续子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+
+```c++
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int ans = INT_MAX;
+        int left = 0;
+        int sub;
+        int sum = 0;
+        for(int right = 0; right < nums.size(); right++)
+        {
+            sum += nums[right];
+
+            while(sum >= target)
+            {
+                sub = right - left + 1;
+                ans = ans < sub ? ans : sub;
+                sum -= nums[left];
+                left++;
+            }
+        }
+        return ans == INT_MAX ? 0 : ans;
+    }
+};
+```
+
