@@ -456,3 +456,156 @@ public:
 };
 ```
 
+## 203 移除链表元素
+
+给你一个链表的头节点 `head` 和一个整数 `val` ，请你删除链表中所有满足 `Node.val == val` 的节点，并返回 **新的头节点** 。（应该注意删除后，不用跳下一步）。
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* cur = dummy;
+
+        while(cur->next)
+        {
+            if(cur->next->val == val)
+            {
+                ListNode* tmp = cur->next;
+                cur->next = cur->next->next;
+                delete tmp;
+            }
+            else //else 不可少
+                cur = cur->next;
+        }
+
+        return dummy->next;
+    }
+};
+```
+
+## 707 设计链表
+
+设计链表的实现。您可以选择使用单链表或双链表。单链表中的节点应该具有两个属性：val 和 next。val 是当前节点的值，next 是指向下一个节点的指针/引用。如果要使用双向链表，则还需要一个属性 prev 以指示链表中的上一个节点。假设链表中的所有节点都是 0-index 的。
+
+在链表类中实现这些功能：
+
+get(index)：获取链表中第 index 个节点的值。如果索引无效，则返回-1。
+addAtHead(val)：在链表的第一个元素之前添加一个值为 val 的节点。插入后，新节点将成为链表的第一个节点。
+addAtTail(val)：将值为 val 的节点追加到链表的最后一个元素。
+addAtIndex(index,val)：在链表中的第 index 个节点之前添加值为 val  的节点。如果 index 等于链表的长度，则该节点将附加到链表的末尾。如果 index 大于链表长度，则不会插入节点。如果index小于0，则在头部插入节点。
+deleteAtIndex(index)：如果索引 index 有效，则删除链表中的第 index 个节点。
+
+```c++
+class MyLinkedList {
+public:
+    struct LinkedNode {
+        int val;
+        LinkedNode* next;
+        LinkedNode(int val):val(val), next(nullptr){}
+    };
+    /** Initialize your data structure here. */
+    MyLinkedList() {
+        dummy = new LinkedNode(0);
+        size = 0;
+    }
+    
+    /** Get the value of the index-th node in the linked list. If the index is invalid, return -1. */
+    int get(int index) {
+        if(index >= size)
+        {
+            return -1;
+        }
+        LinkedNode* cur = dummy->next;
+        while(index--)
+        {
+            cur = cur->next;
+        }
+        return cur->val;
+    }
+    
+    /** Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list. */
+    void addAtHead(int val) {
+        LinkedNode* node = new LinkedNode(val);
+        node->next = dummy->next;
+        dummy->next = node;
+        size++;
+    }
+    
+    /** Append a node of value val to the last element of the linked list. */
+    void addAtTail(int val) {
+        LinkedNode* cur = dummy;
+        while(cur->next)
+        {
+            cur = cur->next;
+        }
+
+        LinkedNode* node = new LinkedNode(val);
+        cur->next = node;
+        size++;
+    }
+    
+    /** Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted. */
+    void addAtIndex(int index, int val) {
+        if(index == size) addAtTail(val);
+        else if(index < 0) addAtHead(val);
+        else if(index > size) return ;
+        else
+        {
+            LinkedNode* node = new LinkedNode(val);
+            LinkedNode* cur = dummy;
+            while(index--)
+            {
+                cur = cur->next;
+            }
+            node->next = cur->next;
+            cur->next = node;
+            size++;
+        }
+    }
+    
+    /** Delete the index-th node in the linked list, if the index is valid. */
+    void deleteAtIndex(int index) {
+        if(index < 0) return ;
+        else if(index >= size) return ;
+        else
+        {
+            LinkedNode* cur = dummy;
+            while(index--)
+            {
+                cur = cur->next;
+            }
+            LinkedNode* tmp = cur->next;
+            cur->next = cur->next->next;
+            delete tmp;
+            size--;
+        }
+    }
+
+private:
+    LinkedNode* dummy;
+    int size;
+};
+
+/**
+ * Your MyLinkedList object will be instantiated and called as such:
+ * MyLinkedList* obj = new MyLinkedList();
+ * int param_1 = obj->get(index);
+ * obj->addAtHead(val);
+ * obj->addAtTail(val);
+ * obj->addAtIndex(index,val);
+ * obj->deleteAtIndex(index);
+ */
+```
+
