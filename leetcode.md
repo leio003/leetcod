@@ -294,3 +294,52 @@ public:
 };
 ```
 
+## 59 螺旋矩阵 II
+
+给你一个正整数 `n` ，生成一个包含 `1` 到 `n2` 所有元素，且元素按顺时针顺序螺旋排列的 `n x n` 正方形矩阵 `matrix` 。(不得不说这个题还有点对称美的感觉。)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        int flag = 0;
+        int cnt = 1;
+        vector<vector<int>> ans(n, vector<int>(n));
+        while(true)
+        {
+            for(int i = flag; i < n - 1 - flag; i++)
+            {
+                ans[flag][i] = cnt;  
+                cnt++;
+            }
+    
+            for(int i = flag; i < n - 1 - flag; i++)
+            {
+                ans[i][n - 1 - flag] = cnt;   
+                cnt++;
+            }
+
+            for(int i = n - 1 - flag; i >= flag + 1; i--)
+            {
+                ans[n - 1 - flag][i] = cnt;
+                cnt++;
+            }
+
+            for(int i = n - 1 - flag; i >= flag + 1; i--)
+            {
+                ans[i][flag] = cnt;
+                cnt++;
+            }
+
+            flag++;
+            if(cnt >= n * n) break;
+        }
+        
+        if (n % 2 == 1)
+            ans[n/2][n/2] = cnt;
+
+        return ans;
+    }
+};
+```
+
