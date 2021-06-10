@@ -343,3 +343,116 @@ public:
 };
 ```
 
+## 54 螺旋矩阵
+
+给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
+
+```c++
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        int flag = 0;
+        int k = 0;
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        vector<int> ans;
+
+        while(true)
+        {
+            for(int i = flag; i < n - 1 - flag && k < m*n; i++)
+            {
+                ans.push_back(matrix[flag][i]);
+                k++;
+            }
+
+            for(int i = flag; i < m - 1 - flag && k < m*n; i++)
+            {
+                ans.push_back(matrix[i][n - 1 - flag]);
+                k++;
+            }
+
+            for(int i = n - 1 - flag; i >= flag + 1 && k < m*n; i--)
+            {
+                ans.push_back(matrix[m - 1 - flag][i]);
+                k++;
+            }
+
+            for(int i = m - 1 - flag; i >= flag + 1 && k < m*n; i--)
+            {
+                ans.push_back(matrix[i][flag]);
+                k++;
+            }
+
+            flag++;
+
+            if(k >= m*n) break;
+
+            if((m == n) && (m % 2 == 1) && (k >= m * n - 1))
+            {
+                ans.push_back(matrix[m/2][m/2]);
+                break;
+            }
+
+        }
+        return ans;
+    }
+};
+```
+
+## 剑指 Offer 29 顺时针打印矩阵
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。与上一个题一模一样，但测试样例不同，上题没有考虑为空的状态。
+
+```c++
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if(matrix.size() == 0 || matrix[0].size() == 0) return {};
+        int flag = 0;
+        int k = 0;
+        int m = matrix.size();
+        int n = matrix[0].size();    
+        vector<int> ans;
+        while(true)
+        {
+            for(int i = flag; i < n - 1 - flag && k < m*n; i++)
+            {
+                ans.push_back(matrix[flag][i]);
+                k++;
+            }
+
+            for(int i = flag; i < m - 1 - flag && k < m*n; i++)
+            {
+                ans.push_back(matrix[i][n - 1 - flag]);
+                k++;
+            }
+
+            for(int i = n - 1 - flag; i >= flag + 1 && k < m*n; i--)
+            {
+                ans.push_back(matrix[m - 1 - flag][i]);
+                k++;
+            }
+
+            for(int i = m - 1 - flag; i >= flag + 1 && k < m*n; i--)
+            {
+                ans.push_back(matrix[i][flag]);
+                k++;
+            }
+
+            flag++;
+
+            if(k >= m * n) break;
+
+            if((m == n) && (m % 2 == 1) && (k >= m * n -1))
+            {
+                ans.push_back(matrix[m/2][m/2]);
+                break;
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
