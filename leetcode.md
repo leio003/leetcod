@@ -456,6 +456,8 @@ public:
 };
 ```
 
+# 3、链表
+
 ## 203 移除链表元素
 
 给你一个链表的头节点 `head` 和一个整数 `val` ，请你删除链表中所有满足 `Node.val == val` 的节点，并返回 **新的头节点** 。（应该注意删除后，不用跳下一步）。
@@ -641,4 +643,180 @@ public:
     }
 };
 ```
+
+## 24 两两交换链表中的节点
+
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+**你不能只是单纯的改变节点内部的值**，而是需要实际的进行节点交换。(注意判断条件)
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        ListNode* dummy = new ListNode(0);
+        ListNode* pre = dummy;
+        dummy->next = head;
+        ListNode* cur = head;
+        while(pre->next && pre->next->next)
+        {
+            pre->next = cur->next;
+            cur->next = pre->next->next;
+            pre->next->next = cur;
+            pre = cur;
+            cur = cur->next;
+        } 
+        return dummy->next;
+    }
+};
+```
+
+## 19 删除链表的倒数第 N 个结点
+
+给你一个链表，删除链表的倒数第 `n` 个结点，并且返回链表的头结点。
+
+**进阶：**你能尝试使用一趟扫描实现吗？
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* fast = head;
+        ListNode* pre = dummy;
+
+        while(n--)
+        {
+            fast = fast->next;
+        }
+
+        while(fast)
+        {
+            fast = fast->next;
+            pre = pre->next;
+        }
+        ListNode* tmp = pre->next;
+        pre->next = pre->next->next;
+        delete tmp;
+
+        return dummy->next;
+    }
+};
+```
+
+## 面试题 02.07 链表相交
+
+给定两个（单向）链表，判定它们是否相交并返回交点。请注意相交的定义基于节点的引用，而不是基于节点的值。换句话说，如果一个链表的第k个节点与另一个链表的第j个节点是同一节点（引用完全相同），则这两个链表相交。(a+b+c，但需要注意特殊边界与不相交情况)
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if(headA == NULL || headB == NULL) return NULL;
+        ListNode* pa = headA;
+        ListNode* pb = headB;
+        int flag = 0;
+        while(true)
+        {
+            if(pa == pb) break;
+
+            pa = pa->next;
+            pb = pb->next;
+            if(pa == NULL)
+            {
+                pa = headB;
+                flag++;
+            } 
+            if(pb == NULL)
+            {
+                pb = headA;
+                flag++;
+            } 
+            if(flag > 2) return NULL;
+        }
+        return pa;
+    }
+};
+```
+
+## 142 环形链表 II
+
+给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+
+为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。注意，pos 仅仅是用于标识环的情况，并不会作为参数传递到函数中。
+
+说明：不允许修改给定的链表。
+
+进阶：
+
+你是否可以使用 O(1) 空间解决此题？
+
+首先明确双指针，一快一慢，设进环之前长度为a，进环到相遇位置长度b，剩下的环长度为c。慢指针a+b，快指针a+n*(b+c)+b，另外快指针走过的路的长度是慢指针的两倍可得：2*[a+b] = a+n*(b+c)+b， a = (n-1)*b + n*c.
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* slow = head;
+        ListNode* fast = head;
+
+        while(fast && fast->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if(slow == fast)
+            {
+                ListNode* pa = fast;
+                ListNode* pb = head;
+                while(pa != pb)
+                {
+                    pa = pa->next;
+                    pb = pb->next;
+                }
+                return pa;
+            }
+        }
+        return NULL;
+    }
+};
+```
+
 
