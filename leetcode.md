@@ -819,4 +819,123 @@ public:
 };
 ```
 
+# 4、哈希
+
+## 242 有效的字母异位词
+
+给定两个字符串 *s* 和 *t* ，编写一个函数来判断 *t* 是否是 *s* 的字母异位词。
+
+```c++
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        int tmp[27] = {0};
+        if(s.size() != t.size()) return false;
+
+        for(int i = 0; i < s.size(); i++)
+        {
+            tmp[s[i] - 'a']++;
+            tmp[t[i] - 'a']--;
+        }
+
+        for(int i = 0; i < 27; i++)
+        {
+            if(tmp[i] != 0) return false;
+        }
+        return true;
+    }
+};
+```
+
+## 349 两个数组的交集
+
+给定两个数组，编写一个函数来计算它们的交集。(当元素数量未知的时候，set比数组靠谱)
+
+```c++
+class Solution {
+public:
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> set(nums1.begin(), nums1.end());
+        unordered_set<int> ans;
+        for(int i = 0; i < nums2.size(); i++)
+        {
+            if(set.find(nums2[i]) != set.end())
+            {
+                ans.insert(nums2[i]);
+            }
+        }
+        return vector<int>(ans.begin(), ans.end());
+    }
+};
+```
+
+## 350 两个数组的交集 II
+
+给定两个数组，编写一个函数来计算它们的交集。
+
+- 输出结果中每个元素出现的次数，应与元素在两个数组中出现次数的最小值一致。
+
+- 我们可以不考虑输出结果的顺序。
+
+  与上题不同点在于，重复的值也有需要根据次数来决定，因此需要map记录次数。
+
+  ```c++
+  class Solution {
+  public:
+      vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+          unordered_map<int, int> map;
+          vector<int> ans;
+          for(int i = 0; i < nums1.size(); i++)
+          {
+              map[nums1[i]]++;
+          }
+  
+          for(int i = 0; i < nums2.size(); i++)
+          {
+              if(map.find(nums2[i]) != map.end() && map[nums2[i]] != 0)
+              {
+                  ans.push_back(nums2[i]);
+                  map[nums2[i]]--;
+              }
+          }
+          return ans;
+      }
+  };
+  ```
+
+  
+
+## 202 快乐数
+
+编写一个算法来判断一个数 n 是不是快乐数。
+
+「快乐数」定义为：
+
+对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和。
+然后重复这个过程直到这个数变为 1，也可能是 无限循环 但始终变不到 1。
+如果 可以变为  1，那么这个数就是快乐数。
+如果 n 是快乐数就返回 true ；不是，则返回 false 。
+
+```c++
+class Solution {
+public:
+    bool isHappy(int n) {
+        unordered_set<int> set;
+        int sum = 0;
+        while(n != 1)
+        {
+            while(n)
+            {
+                sum += (n % 10) * (n % 10);
+                n = n / 10;
+            }
+            if(set.find(sum) != set.end()) return false;
+            set.insert(sum);
+            n = sum;
+            sum = 0;
+        }
+        return true;
+    }
+};
+```
 
