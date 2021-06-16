@@ -939,3 +939,187 @@ public:
 };
 ```
 
+## 1 两数之和
+
+给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+```c++
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> map;
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            auto iter = map.find(target - nums[i]);
+            if(iter != map.end())
+            {
+                return {iter->second, i};
+            }
+            map.insert(pair<int, int>(nums[i], i));
+        }
+
+        return {};
+    }
+};
+```
+
+## 454 四数相加 II
+
+给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+
+为了使问题简单化，所有的 A, B, C, D 具有相同的长度 N，且 0 ≤ N ≤ 500 。所有整数的范围在 -228 到 228 - 1 之间，最终结果不会超过 231 - 1 。
+
+```c++
+class Solution {
+public:
+    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {
+        unordered_map<int, int> map;
+
+        for(int i = 0; i < nums1.size(); i++)
+        {
+            for(int j = 0; j < nums2.size(); j++)
+            {
+                map[nums1[i] + nums2[j]]++;
+            }
+        }
+
+        int ans = 0;
+        for(int i = 0; i < nums3.size(); i++)
+        {
+            for(int j = 0; j < nums4.size(); j++)
+            {
+                if(map.find(-(nums3[i] + nums4[j])) != map.end())
+                {
+                    ans += map[-(nums3[i] + nums4[j])];
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 383 赎金信
+
+给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。
+
+(题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)
+
+```c++
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        int tmp[27] = {0};
+
+        for(int i = 0; i < magazine.size(); i++)
+        {
+            tmp[magazine[i] - 'a']++;
+        }
+
+        for(int i = 0; i < ransomNote.size(); i++)
+        {
+            tmp[ransomNote[i] - 'a']--;
+            if(tmp[ransomNote[i] - 'a'] < 0) return false;
+        }
+
+      
+        return true;
+    }
+};
+```
+
+## 15 三数之和
+
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+```
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> ans;
+        sort(nums.begin(), nums.end());
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            if(nums[i] > 0) return ans;
+
+            if(i > 0 && nums[i] == nums[i - 1]) continue;
+
+            int left = i + 1;
+            int right = nums.size() - 1;
+
+            while(right > left)
+            {
+                if(nums[i] + nums[left] + nums[right] > 0) right--;
+                else if(nums[i] + nums[left] + nums[right] < 0) left++;
+                else
+                {
+                    ans.push_back({nums[i], nums[left], nums[right]});
+                    while(right > left && nums[right] == nums[right - 1]) right--;
+                    while(right > left && nums[left] == nums[left + 1]) left++;
+
+                    right--;
+                    left++;
+                }
+
+            }
+        }
+        return ans;
+        
+    }
+};
+```
+
+## 18 四数之和
+
+给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+
+注意：答案中不可以包含重复的四元组。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        vector<vector<int>> ans;
+        sort(nums.begin(), nums.end());
+        for(int k = 0; k < nums.size(); k++)
+        {
+            if(k > 0 && nums[k] == nums[k - 1])
+                continue;
+
+            for(int i = k + 1; i < nums.size(); i++)
+            {
+                if(i > k + 1 && nums[i] == nums[i - 1])
+                    continue;
+
+                int left = i + 1;
+                int right = nums.size() - 1;
+                while(right > left)
+                {
+                    if((nums[k] + nums[i] + nums[left] + nums[right]) > target) right--;
+                    else if((nums[k] + nums[i] + nums[left] + nums[right]) < target) left++;
+                    else
+                    {
+                        ans.push_back({nums[k], nums[i], nums[left], nums[right]});
+                        while(right > left && nums[left] == nums[left + 1]) left++;
+                        while(right > left && nums[right] == nums[right - 1]) right--;
+
+                        left++;
+                        right--;
+                    }
+                }
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
