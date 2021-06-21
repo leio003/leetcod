@@ -1123,3 +1123,794 @@ public:
 };
 ```
 
+# 5、其他
+
+## 剑指 Offer 05 替换空格
+
+请实现一个函数，把字符串 `s` 中的每个空格替换成"%20"。
+
+```c++
+class Solution {
+public:
+    string replaceSpace(string s) {
+        int cnt = 0;
+        for(int i = 0; i < s.size(); i++)
+        {
+            if(s[i] == ' ') cnt++;
+        }
+        int old_size = s.size() - 1;
+        s.resize(s.size() + cnt * 2);
+
+        for(int i = old_size, j = s.size() - 1; i >= 0 && j >= 0; i--)
+        {
+            if(s[i] == ' ')
+            {
+                s[j--] = '0';
+                s[j--] = '2';
+                s[j--] = '%';
+            }
+            else
+            {
+                s[j] = s[i];
+                j--;
+            }
+        }
+        return s;
+    }
+};
+```
+
+## 151 翻转字符串里的单词
+
+给你一个字符串 s ，逐个翻转字符串中的所有 单词 。
+
+单词 是由非空格字符组成的字符串。s 中使用至少一个空格将字符串中的 单词 分隔开。
+
+请你返回一个翻转 s 中单词顺序并用单个空格相连的字符串。
+
+说明：
+
+输入字符串 s 可以在前面、后面或者单词间包含多余的空格。
+翻转后单词间应当仅用一个空格分隔。
+翻转后的字符串中不应包含额外的空格。
+
+```c++
+class Solution {
+public:
+    string reverseWords(string s) {
+        stack<string> st;
+        string res, tmp;
+        istringstream ss(s);
+
+        while(ss >> tmp)
+        {
+            st.push(tmp);
+            st.push(" ");
+        }
+
+        if(!st.empty()) st.pop();
+
+        while(!st.empty())
+        {
+            res += st.top();
+            st.pop();
+        }
+
+        return res;
+    }
+};
+```
+
+## 剑指 Offer 09 用两个栈实现队列
+
+用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead 操作返回 -1 )
+
+```c++
+class CQueue {
+public:
+    stack<int> In;
+    stack<int> Out;
+    CQueue() {
+
+    }
+    
+    void appendTail(int value) {
+        if(Out.empty()) In.push(value);
+        else
+        {
+            while(!Out.empty())
+            {
+                In.push(Out.top());
+                Out.pop();
+            }
+            In.push(value);
+        }
+        return;
+    }
+    
+    int deleteHead() {
+
+        if(Out.empty() && !In.empty())
+        {
+            while(!In.empty())
+            {
+                Out.push(In.top());
+                In.pop();
+            }
+        }
+        else if(Out.empty() && In.empty()) return -1;
+
+        int ans = Out.top();
+        Out.pop();
+
+        return ans;
+    }
+};
+
+/**
+ * Your CQueue object will be instantiated and called as such:
+ * CQueue* obj = new CQueue();
+ * obj->appendTail(value);
+ * int param_2 = obj->deleteHead();
+ */
+```
+
+# 6、树
+
+## 144 二叉树的前序遍历
+
+给你二叉树的根节点 `root` ，返回它节点值的 **前序** 遍历。（包括递归非递归）。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // void preorder(TreeNode* node, vector<int>& res)
+    // {
+    //     if(node == nullptr) return;
+    //     res.push_back(node->val);
+    //     preorder(node->left, res);
+    //     preorder(node->right, res);
+    // }
+
+    vector<int> preorderTraversal(TreeNode* root) {
+        // vector<int> ans;
+        // preorder(root, ans);
+        // return ans;
+
+        stack<TreeNode*> st;
+        vector<int> ans;
+        if(root) st.push(root);
+        while(!st.empty())
+        {
+            TreeNode* node = st.top();
+            st.pop();
+
+            ans.push_back(node->val);
+            if(node->right) st.push(node->right);
+            if(node->left) st.push(node->left);
+            
+        }
+
+        return ans;
+
+    }
+};
+```
+
+## 94 二叉树的中序遍历
+
+给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
+
+ 
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // void inorder(TreeNode* node, vector<int>& res)
+    // {
+    //     if(node == nullptr) return;
+    //     inorder(node->left, res);
+    //     res.push_back(node->val);
+    //     inorder(node->right, res);
+    // }
+    vector<int> inorderTraversal(TreeNode* root) {
+        // vector<int> ans;
+        // inorder(root, ans);
+        // return ans;
+        stack<TreeNode*> st;
+        vector<int> ans;
+        TreeNode* node = root;
+        while(node != nullptr || !st.empty())
+        {
+            if(node != nullptr)
+            {
+                st.push(node);
+                node = node->left;
+            }
+            else
+            {
+                node = st.top();
+                st.pop();
+                ans.push_back(node->val);
+                node = node->right;
+            }
+
+        }
+        return ans;
+
+    }
+};
+```
+
+## 145 二叉树的后序遍历
+
+给定一个二叉树，返回它的 *后序* 遍历。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // void postorder(TreeNode* node, vector<int>& res)
+    // {
+    //     if(node == nullptr) return ;
+    //     postorder(node->left, res);
+    //     postorder(node->right, res);
+    //     res.push_back(node->val);
+    // }
+
+    vector<int> postorderTraversal(TreeNode* root) {
+        // vector<int> ans;
+        // postorder(root, ans);
+        // return ans;
+        stack<TreeNode*> st;
+        vector<int> ans;
+        if(root) st.push(root);
+
+        while(!st.empty())
+        {
+            TreeNode* node = st.top();
+            st.pop();
+            ans.push_back(node->val);
+
+            if(node->left) st.push(node->left);
+            if(node->right) st.push(node->right);
+        }
+
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
+```
+
+## 102 二叉树的层序遍历
+
+给你一个二叉树，请你返回其按 **层序遍历** 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        queue<TreeNode*> que;
+        vector<vector<int>> ans;
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            vector<int> min_ans;
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                min_ans.push_back(node->val);
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+
+            ans.push_back(min_ans);
+        }
+        return ans;
+    }
+};
+```
+
+## 107 二叉树的层序遍历 II
+
+给定一个二叉树，返回其节点值自底向上的层序遍历。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrderBottom(TreeNode* root) {
+        queue<TreeNode*> que;
+        vector<vector<int>> ans;
+
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            vector<int> min_ans;
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                min_ans.push_back(node->val);
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+            ans.push_back(min_ans);
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
+```
+
+## 199  二叉树的右视图
+
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        queue<TreeNode*> que;
+        vector<int> ans;
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+                if(i == (size - 1))
+                {
+                    ans.push_back(node->val);
+                }
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 637 二叉树的层平均值
+
+给定一个非空二叉树, 返回一个由每层节点平均值组成的数组。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<double> averageOfLevels(TreeNode* root) {
+        queue<TreeNode*> que;
+        vector<double> ans;
+
+        if(root) que.push(root);
+        while(!que.empty())
+        {
+            int size = que.size();
+            long long sum = 0;
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                sum += node->val;
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+            ans.push_back(1.0 * sum / size);
+        }
+        return ans;
+    }
+};
+```
+
+## 429 [N 叉树的层序遍历](https://leetcode-cn.com/problems/n-ary-tree-level-order-traversal/)
+
+给定一个 N 叉树，返回其节点值的*层序遍历*。（即从左到右，逐层遍历）。
+
+树的序列化输入是用层序遍历，每组子节点都由 null 值分隔（参见示例）。
+
+```c++
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    vector<Node*> children;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+    }
+
+    Node(int _val, vector<Node*> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+*/
+
+class Solution {
+public:
+    vector<vector<int>> levelOrder(Node* root) {
+        queue<Node*> que;
+        vector<vector<int>> ans;
+
+        if(root) que.push(root);
+        while(!que.empty())
+        {
+            int size = que.size();
+            vector<int> min_ans;
+
+            for(int i = 0; i < size; i++)
+            {
+                Node* node = que.front();
+                que.pop();
+                min_ans.push_back(node->val);
+                for(auto child : node->children)
+                {
+                    que.push(child);
+                }
+            }
+            ans.push_back(min_ans);
+        }
+
+        return ans;
+    }
+};
+```
+
+## 515 [在每个树行中找最大值](https://leetcode-cn.com/problems/find-largest-value-in-each-tree-row/)
+
+您需要在二叉树的每一行中找到最大的值。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        queue<TreeNode*> que;
+        vector<int> ans;
+
+        if(root) que.push(root);
+        while(!que.empty())
+        {
+            int size = que.size();
+            int max_num = INT_MIN;
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                max_num = max(max_num, node->val);
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+            ans.push_back(max_num);
+        }
+        return ans;
+    }
+};
+```
+
+## 116 [填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+
+给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+```c++
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    Node() : val(0), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next)
+        : val(_val), left(_left), right(_right), next(_next) {}
+};
+*/
+
+class Solution {
+public:
+    Node* connect(Node* root) {
+        queue<Node*> que;
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            for(int i = 0; i < size; i++)
+            {
+                Node* node = que.front();
+                que.pop();
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+                if(i == (size - 1))
+                {
+                    node->next = NULL;
+                }
+                else
+                {
+                    node->next = que.front();
+                }
+            }
+        }
+        return root;
+    }
+};
+```
+
+## 117 [填充每个节点的下一个右侧节点指针 II](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii/)
+
+给定一个二叉树
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+```c++
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    Node() : val(0), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next)
+        : val(_val), left(_left), right(_right), next(_next) {}
+};
+*/
+
+class Solution {
+public:
+    Node* connect(Node* root) {
+        queue<Node*> que;
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            for(int i = 0; i < size; i++)
+            {
+                Node* node = que.front();
+                que.pop();
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+
+                if(i == (size - 1)) node->next = NULL;
+                else
+                {
+                    node->next = que.front();
+                }
+            }
+
+        }
+        return root;
+    }
+};
+```
+
+## 226 [ 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+
+翻转一棵二叉树。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // void preorder(TreeNode* node)
+    // {
+    //     if(node == nullptr) return;
+    //     swap(node->left, node->right);
+    //     preorder(node->left);
+    //     preorder(node->right);
+    // }
+
+    // void inorder(TreeNode* node)
+    // {
+    //     if(node == nullptr) return;
+    //     inorder(node->left);
+    //     swap(node->left, node->right);
+    //     inorder(node->left);
+    // }
+
+    // void postorder(TreeNode* node)
+    // {
+    //     if(node == nullptr) return;
+    //     postorder(node->left);
+    //     postorder(node->right);
+    //     swap(node->left, node->right);
+    // }
+
+    TreeNode* invertTree(TreeNode* root) {
+        // preorder(root);
+        // inorder(root);
+        // postorder(root);
+        // return root;
+
+        stack<TreeNode*> st;
+        if(root) st.push(root);
+
+        while(!st.empty())
+        {
+            TreeNode* node = st.top();
+            st.pop();
+            swap(node->left, node->right);
+            if(node->right) st.push(node->right);
+            if(node->left) st.push(node->left);
+        }
+
+        return root;
+
+    }
+};
+```
+
+## 101 [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool preorder(TreeNode* left, TreeNode* right)
+    {
+        if(left == nullptr && right == nullptr) return true;
+        else if(left == nullptr || right == nullptr) return false;
+        else if(left->val != right->val) return false;
+        else
+        {
+            return preorder(left->left, right->right) && preorder(left->right, right->left);
+        } 
+    }
+
+    bool isSymmetric(TreeNode* root) {
+        if(root == nullptr) return true;
+
+        return preorder(root->left, root->right);
+    }   
+};
+```
+
