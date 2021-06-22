@@ -1914,3 +1914,525 @@ public:
 };
 ```
 
+## 104 [ 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+
+给定一个二叉树，找出其最大深度。
+
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+
+**说明:** 叶子节点是指没有子节点的节点。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int getDepth(TreeNode* node)
+    {
+        if(node == nullptr) return 0;
+
+        int left = getDepth(node->left);
+        int right = getDepth(node->right);
+        return max(left, right) + 1;
+    }
+
+
+    int maxDepth(TreeNode* root) {
+        // queue<TreeNode*> que;
+        // int ans = 0;
+        // if(root) que.push(root);
+
+        // while(!que.empty())
+        // {
+        //     int size = que.size();
+        //     ans++;
+        //     for(int i = 0; i < size; i++)
+        //     {
+        //         TreeNode* node = que.front();
+        //         que.pop();
+
+        //         if(node->left) que.push(node->left);
+        //         if(node->right) que.push(node->right);
+        //     }
+        // }
+
+        // return ans;
+
+        return getDepth(root);
+    }
+};
+```
+
+## 111 [二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
+
+给定一个二叉树，找出其最小深度。
+
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+
+**说明：**叶子节点是指没有子节点的节点。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // int getDepth(TreeNode* node)
+    // {
+    //     if(node == nullptr) return 0;
+    //     if(node->left == nullptr && node->right == nullptr) return 1;
+    //     else if(node->left == nullptr)
+    //     {
+    //         return getDepth(node->right) + 1;
+    //     }
+    //     else if(node->right == nullptr)
+    //     {
+    //         return getDepth(node->left) + 1;
+    //     }
+    //     else
+    //     {
+    //         return min(getDepth(node->left), getDepth(node->right)) + 1;
+    //     }
+    // }
+
+    int minDepth(TreeNode* root) {
+        // return getDepth(root);
+        queue<TreeNode*> que;
+        int ans = 0;
+        if(root) que.push(root);
+        while(!que.empty())
+        {
+            int size = que.size();
+            ans++;
+
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                if(node->left == nullptr && node->right == nullptr) return ans;
+
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+
+        }
+        return ans;
+
+    }
+};
+```
+
+## 222 [完全二叉树的节点个数](https://leetcode-cn.com/problems/count-complete-tree-nodes/)
+
+给你一棵 完全二叉树 的根节点 root ，求出该树的节点个数。
+
+完全二叉树 的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都达到最大值，并且最下面一层的节点都集中在该层最左边的若干位置。若最底层为第 h 层，则该层包含 1~ 2h 个节点。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // int getNum(TreeNode* node)
+    // {
+    //     if(node == nullptr) return 0;
+    //     return getNum(node->left) + getNum(node->right) + 1;
+    // }
+
+    int countNodes(TreeNode* root) {
+        // return getNum(root);
+        queue<TreeNode*> que;
+        int ans = 0;
+        if(root) que.push(root);
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            ans += size;
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 110 [平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/)
+
+给定一个二叉树，判断它是否是高度平衡的二叉树。
+
+本题中，一棵高度平衡二叉树定义为：
+
+> 一个二叉树*每个节点* 的左右两个子树的高度差的绝对值不超过 1 。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // int getDepth(TreeNode* node)
+    // {
+    //     if(node == nullptr) return 0;
+
+    //     return max(getDepth(node->left), getDepth(node->right)) + 1;
+    // }
+
+    int getDepth(TreeNode* node)
+    {
+        if(node == nullptr) return 0;
+        int left = getDepth(node->left);
+        if(left == -1) return -1;
+        int right = getDepth(node->right);
+        if(right == -1) return -1;
+        return abs(left - right) <= 1 ? max(left, right) + 1 : -1;
+    }
+
+    bool isBalanced(TreeNode* root) {
+        // if(root == nullptr) return true;
+        // int left = getDepth(root->left);
+        // int right = getDepth(root->right);
+        // bool ans = abs(left - right) <= 1 ? true : false;
+
+        // return ans && isBalanced(root->left) & isBalanced(root->right);
+        return getDepth(root) == -1 ? false : true;
+        
+    }
+};
+```
+
+## 257 [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
+
+给定一个二叉树，返回所有从根节点到叶子节点的路径。
+
+**说明:** 叶子节点是指没有子节点的节点。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    // vector<string> ans;
+    // vector<int> min_s;
+
+    // void backtracking(TreeNode* node)
+    // {
+    //     if(node->left == nullptr && node->right == nullptr)
+    //     {
+    //         min_s.push_back(node->val);
+    //         string s = "";
+    //         for(int i = 0; i < min_s.size() - 1; i++)
+    //         {
+    //             s += to_string(min_s[i]);
+    //             s += "->";
+    //         }
+    //         s += to_string(min_s[min_s.size() - 1]);
+    //         ans.push_back(s);
+    //         return ;
+    //     }
+    //     min_s.push_back(node->val);
+    //     if(node->left)
+    //     {
+    //         backtracking(node->left);
+    //         min_s.pop_back();
+    //     }
+    //     if(node->right)
+    //     {
+    //         backtracking(node->right);
+    //         min_s.pop_back();
+    //     } 
+
+    // }
+
+    vector<string> ans;
+
+    void backtracking(TreeNode* node, string s) //不能引用，引用就变了
+    {
+        if(node->left == nullptr && node->right == nullptr)
+        {
+            s += to_string(node->val);
+            ans.push_back(s);
+            return;
+        }
+
+        s += to_string(node->val);
+        if(node->left)
+        {
+            backtracking(node->left, s + "->");           
+        }
+        if(node->right)
+        {
+            backtracking(node->right, s + "->");          
+        }
+    }
+
+
+    vector<string> binaryTreePaths(TreeNode* root) {
+        if(root == nullptr) return ans;
+        string s;
+        backtracking(root, s);
+        return ans;
+    }
+};
+```
+
+## 100 [相同的树](https://leetcode-cn.com/problems/same-tree/)
+
+给你两棵二叉树的根节点 `p` 和 `q` ，编写一个函数来检验这两棵树是否相同。
+
+如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p == nullptr && q == nullptr) return true;
+        else if(p == nullptr || q == nullptr) return false;
+        else if(p->val != q->val) return false;
+        else
+        {
+            return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+        }
+    }
+};
+```
+
+## 572 [另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
+
+给定两个非空二叉树 s 和 t，检验 s 中是否包含和 t 具有相同结构和节点值的子树。s 的一个子树包括 s 的一个节点和这个节点的所有子孙。s 也可以看做它自身的一棵子树。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p == nullptr && q == nullptr) return true;
+        else if(p == nullptr || q == nullptr) return false;
+        else if(p->val != q->val) return false;
+        else
+        {
+            return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+        }
+    }
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if(root == nullptr && subRoot == nullptr) return true;
+        if(root == nullptr) return false;
+        return isSameTree(root, subRoot) || isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot);
+    }
+};
+```
+
+## 404 [左叶子之和](https://leetcode-cn.com/problems/sum-of-left-leaves/)
+
+计算给定二叉树的所有左叶子之和。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+
+    int sumOfLeftLeaves(TreeNode* root) {
+        // queue<TreeNode*> que;
+        // int ans = 0;
+        // if(root) que.push(root);
+        // while(!que.empty())
+        // {
+        //     TreeNode* node = que.front();
+        //     que.pop();
+        //     if(node->left)
+        //     {
+        //         if(node->left->left == nullptr && node->left->right == nullptr)
+        //         {
+        //             ans += node->left->val;
+        //         }
+        //         que.push(node->left);
+        //     }
+        //     if(node->right) que.push(node->right);
+        // }
+
+        // return ans;
+        if(root == nullptr) return 0;
+        int left = sumOfLeftLeaves(root->left);
+        int right = sumOfLeftLeaves(root->right);
+        int mid = 0;
+        if(root->left != nullptr && root->left->left == nullptr && root->left->right == nullptr)
+        {
+            mid = root->left->val;
+        }
+
+        return left + right + mid;
+
+    }
+};
+```
+
+## 513 [找树左下角的值](https://leetcode-cn.com/problems/find-bottom-left-tree-value/)
+
+给定一个二叉树，在树的最后一行找到最左边的值。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        queue<TreeNode*> que;
+        if(root) que.push(root);
+        int ans;
+
+        while(!que.empty())
+        {
+            int size = que.size();
+            for(int i = 0; i < size; i++)
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                if(i == 0)
+                {
+                    ans = node->val;
+                }
+                if(node->left) que.push(node->left);
+                if(node->right) que.push(node->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 112 [路径总和](https://leetcode-cn.com/problems/path-sum/)
+
+给你二叉树的根节点 root 和一个表示目标和的整数 targetSum ，判断该树中是否存在 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和 targetSum 。
+
+叶子节点 是指没有子节点的节点。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+
+    bool traversal(TreeNode* node, int sum)
+    {
+        if(!node->left && !node->right && sum == 0) return true;
+        else if(!node->left && !node->right) return false;
+
+        if(node->left)
+        {
+            sum -= node->left->val;
+            if(traversal(node->left, sum)) return true;
+            sum += node->left->val;
+        } 
+        if(node->right)
+        {
+            sum -= node->right->val;
+            if(traversal(node->right, sum)) return true;
+            sum += node->right->val;
+        }
+        return false;
+    }
+
+    bool hasPathSum(TreeNode* root, int targetSum) {
+        if(root == nullptr) return false;
+        return traversal(root , targetSum - root->val);
+    }
+};
+```
+
