@@ -3128,3 +3128,219 @@ public:
 };
 ```
 
+## *701 [二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
+
+给定二叉搜索树（BST）的根节点和要插入树中的值，将值插入二叉搜索树。 返回插入后二叉搜索树的根节点。 输入数据 保证 ，新值和原始二叉搜索树中的任意节点值都不同。
+
+注意，可能存在多种有效的插入方式，只要树在插入后仍保持为二叉搜索树即可。 你可以返回 任意有效的结果 。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        if(root == nullptr)
+        {
+            return new TreeNode(val);
+        }
+        if(root->val > val) root->left = insertIntoBST(root->left, val);
+        if(root->val < val) root->right = insertIntoBST(root->right, val);
+
+        return root;
+    }
+};
+```
+
+## *450 [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+
+给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+
+一般来说，删除节点可分为两个步骤：
+
+首先找到需要删除的节点；
+如果找到了，删除它。
+说明： 要求算法时间复杂度为 O(h)，h 为树的高度。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if(root == nullptr) return nullptr;
+
+        if(root->val == key)
+        {
+            if(root->left == nullptr && root->right == nullptr) return nullptr;
+            else if(root->left == nullptr) return root->right;
+            else if(root->right == nullptr) return root->left;
+            else
+            {
+                TreeNode* right = root->right;
+                TreeNode* cur = root->left;
+                while(cur->right)
+                {
+                    cur = cur->right;
+                }
+                TreeNode* tmp = root;
+                root = root->left;
+                cur->right = right;
+                
+                delete tmp;
+                return root;
+            }
+        }
+        if(root->val > key) root->left = deleteNode(root->left, key);
+        if(root->val < key) root->right = deleteNode(root->right, key);
+
+        return root;
+
+
+    }
+};
+```
+
+## *669 [修剪二叉搜索树](https://leetcode-cn.com/problems/trim-a-binary-search-tree/)
+
+给你二叉搜索树的根节点 root ，同时给定最小边界low 和最大边界 high。通过修剪二叉搜索树，使得所有节点的值在[low, high]中。修剪树不应该改变保留在树中的元素的相对结构（即，如果没有被移除，原有的父代子代关系都应当保留）。 可以证明，存在唯一的答案。
+
+所以结果应当返回修剪好的二叉搜索树的新的根节点。注意，根节点可能会根据给定的边界发生改变。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        if(root == nullptr) return nullptr;
+
+        if(root->val < low)
+        {
+            TreeNode* right = trimBST(root->right, low, high);
+            return right;
+        }
+        if(root->val > high)
+        {
+            TreeNode* left = trimBST(root->left, low, high);
+            return left;
+        }
+
+        root->left = trimBST(root->left, low, high);
+        root->right = trimBST(root->right, low, high);
+        return root;
+        
+    }
+};
+```
+
+## 108 [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。
+
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* construct(vector<int>& nums, int begin, int end)
+    {
+        if(begin > end) return nullptr;
+        int mid = begin + (end - begin) / 2;
+        TreeNode* node = new TreeNode(nums[mid]);
+        node->left = construct(nums, begin, mid - 1);
+        node->right = construct(nums, mid + 1, end);
+        return node;
+    }
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        return construct(nums, 0, nums.size() - 1);
+    }
+};
+```
+
+## 538 [把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+
+给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* pre = nullptr;
+    void inorder(TreeNode* node)
+    {
+        if(node == nullptr) return ;
+        inorder(node->right);
+        if(pre == nullptr)
+        {
+            pre = node;
+        }
+        else
+        {
+            node->val += pre->val;
+        }
+        pre = node;
+        inorder(node->left);
+    }
+
+    TreeNode* convertBST(TreeNode* root) {
+        inorder(root);
+        return root;
+    }
+};
+```
+
