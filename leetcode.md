@@ -3344,3 +3344,458 @@ public:
 };
 ```
 
+# 7、回溯
+
+## 77 组合
+
+给定两个整数 *n* 和 *k*，返回 1 ... *n* 中所有可能的 *k* 个数的组合。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(int n, int k, int startIndex)
+    {
+        if(path.size() == k)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for(int i = startIndex; i <= n; i++)
+        {
+            path.push_back(i);
+            backtracking(n, k, i + 1);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combine(int n, int k) {
+        ans.clear();
+        path.clear();
+        backtracking(n, k, 1);
+        return ans;
+    }
+};
+```
+
+## 216 [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
+
+找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+
+说明：
+
+所有数字都是正整数。
+解集不能包含重复的组合。 
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(int k, int n, int sum, int startIndex)
+    {
+        if(sum == 0 && path.size() == k)
+        {
+            ans.push_back(path);
+            return ;
+        }
+        if(sum < 0) return;
+
+        for(int i = startIndex; i <= n; i++)
+        {
+            path.push_back(i);
+            sum -= i;
+            backtracking(k, n, sum, i + 1);
+            sum += i;
+            path.pop_back();
+        }
+    }
+
+
+    vector<vector<int>> combinationSum3(int k, int n) {
+        ans.clear();
+        path.clear();
+        backtracking(k, 9, n, 1);
+        return ans;
+    }
+};
+```
+
+## 17 [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+```c++
+class Solution {
+public:
+    const string map[10] = {
+        "",
+        "",
+        "abc",
+        "def",
+        "ghi",
+        "jkl",
+        "mno",
+        "pqrs",
+        "tuv",
+        "wxyz"
+    };
+
+    vector<string> ans;
+    string path;
+
+    void backtracking(string digits, int startIndex)
+    {
+        if(path.size() == digits.size())
+        {
+            ans.push_back(path);
+            return ;
+        }
+        int index = digits[startIndex] - '0';
+        string s = map[index];
+
+        for(int i = 0; i < s.size(); i++)
+        {
+            path.push_back(s[i]);
+            backtracking(digits, startIndex + 1);
+            path.pop_back();
+        }
+
+    }
+
+    vector<string> letterCombinations(string digits) {
+        if(digits.size() == 0) return ans;
+        ans.clear();
+        path.clear();
+        backtracking(digits, 0);
+        return ans;
+    }
+};
+```
+
+## 39 [组合总和](https://leetcode-cn.com/problems/combination-sum/)
+
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的数字可以无限制重复被选取。
+
+说明：
+
+所有数字（包括 target）都是正整数。
+解集不能包含重复的组合。 
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& candidates, int target, int startIndex)
+    {
+        if(target == 0)
+        {
+            ans.push_back(path);
+            return ;
+        }
+        if(target < 0) return;
+
+        for(int i = startIndex; i < candidates.size(); i++)
+        {
+            path.push_back(candidates[i]);
+            target -= candidates[i];
+            backtracking(candidates, target, i);
+            target += candidates[i];
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        ans.clear();
+        path.clear();
+        backtracking(candidates, target, 0);
+        return ans;
+    }
+};
+```
+
+## 40 [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/)
+
+给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用一次。
+
+说明：
+
+所有数字（包括目标数）都是正整数。
+解集不能包含重复的组合。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& candidates, int target, int startIndex, vector<bool>& used)
+    {
+        if(target == 0)
+        {
+            ans.push_back(path);
+            return;
+        }
+        if(target < 0) return ;
+
+        for(int i = startIndex; i < candidates.size(); i++)
+        {
+            if(i > 0 && candidates[i] == candidates[i - 1] && used[i - 1] == false)
+                continue;
+            
+            path.push_back(candidates[i]);
+            used[i] = true;
+            target -= candidates[i];
+            backtracking(candidates, target, i + 1, used);
+            target += candidates[i];
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<bool> used(candidates.size(), false);
+
+        backtracking(candidates, target, 0, used);
+        return ans;
+    }
+};
+```
+
+## 131 [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
+
+给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 **回文串** 。返回 `s` 所有可能的分割方案。
+
+**回文串** 是正着读和反着读都一样的字符串。
+
+```c++
+class Solution {
+public:
+    vector<vector<string>> ans;
+    vector<string> path;
+
+    bool isok(const string s, int left, int right)
+    {
+        for(int i = left, j = right; i < j; i++, j--)
+        {
+            if(s[i] != s[j]) return false;
+        }
+        return true;
+    }
+
+    void backtracking(string s, int startIndex)
+    {
+        if(startIndex == s.size())
+        {
+            ans.push_back(path);
+            return ;
+        }
+
+        for(int i = startIndex; i < s.size(); i++)
+        {
+            if(isok(s, startIndex, i))
+            {
+                path.push_back(s.substr(startIndex, i - startIndex + 1));
+                backtracking(s, i + 1);
+                path.pop_back();
+            }
+        }
+    }
+
+    vector<vector<string>> partition(string s) {
+        backtracking(s, 0);
+        return ans;
+    }
+};
+```
+
+## *93 [ 复原 IP 地址](https://leetcode-cn.com/problems/restore-ip-addresses/)(字符串比较)
+
+给定一个只包含数字的字符串，用以表示一个 IP 地址，返回所有可能从 s 获得的 有效 IP 地址 。你可以按任何顺序返回答案。
+
+有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+
+```c++
+class Solution {
+public:
+    vector<string> ans;
+    
+    bool isvalid(const string s)
+    {
+
+        if(s.size() == 0 || s.size() > 3) return false;
+        
+        if(s.size() > 1 && s[0] == '0') return false;
+
+        int num = 0;
+        for (int i = 0; i < s.size(); i++) {
+            // if (s[i] > '9' || s[i] < '0') { // 遇到非数字字符不合法
+            //     return false;
+            // }
+            num = num * 10 + (s[i] - '0');
+            if (num > 255) { // 如果大于255了不合法
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void backtracking(string& s, int startIndex, int pointnum)
+    {
+        if(pointnum == 3)
+        {     
+            if(isvalid(s.substr(startIndex, s.size() - startIndex)))
+                ans.push_back(s);
+            return;
+        }
+
+        for(int i = startIndex; i < s.size(); i++)
+        {
+            if(isvalid(s.substr(startIndex, i - startIndex + 1)))
+            {
+                s.insert(s.begin() + i + 1, '.');
+                pointnum++;
+                backtracking(s, i + 2, pointnum);
+                pointnum--;
+                s.erase(s.begin() + i + 1);
+            }
+            else break;
+        }   
+    }
+
+
+    vector<string> restoreIpAddresses(string s) {
+        backtracking(s, 0, 0);
+        return ans;
+    }
+};
+```
+
+## 78 [子集](https://leetcode-cn.com/problems/subsets/)
+
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& nums, int startIndex)
+    {
+        ans.push_back(path);
+        if(startIndex >= nums.size()) return;
+
+        for(int i = startIndex; i < nums.size(); i++)
+        {
+            path.push_back(nums[i]);
+            backtracking(nums, i + 1);
+            path.pop_back();
+        }
+    }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        backtracking(nums, 0);
+        return ans;
+    }
+};
+```
+
+## 90 [子集 II](https://leetcode-cn.com/problems/subsets-ii/)
+
+给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。返回的解集中，子集可以按 任意顺序 排列。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& nums, int startIndex, vector<bool>& used)
+    {
+        ans.push_back(path);
+        if(startIndex >= nums.size()) return;
+
+        for(int i = startIndex; i < nums.size(); i++)
+        {
+            if(i > 0 && nums[i] == nums[i - 1] && used[i - 1] == false)
+            {
+                continue;
+            }
+
+            path.push_back(nums[i]);
+            used[i] = true;
+            backtracking(nums, i + 1, used);
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<bool> used(nums.size(), false);
+        backtracking(nums, 0, used);
+        return ans;
+    }
+};
+```
+
+## 491 [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)(注意判断条件)
+
+给定一个整型数组, 你的任务是找到所有该数组的递增子序列，递增子序列的长度至少是 2 。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& nums, int startIndex)
+    {
+        if(path.size() >= 2)
+        {
+            ans.push_back(path);
+        }
+        if(startIndex >= nums.size()) return;
+
+        int used[201] = {0};
+        for(int i = startIndex; i < nums.size(); i++)
+        {
+            if(used[nums[i] + 100] == 1) continue;
+
+            if((path.size() > 0 && nums[i] >= path[path.size() - 1]) || path.size() == 0)
+            {
+                path.push_back(nums[i]);
+                used[nums[i] + 100] = 1;
+                backtracking(nums, i + 1);
+                path.pop_back();
+            }
+        }
+    }
+
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        backtracking(nums, 0);
+        return ans;
+    }
+};
+```
+
