@@ -3799,3 +3799,456 @@ public:
 };
 ```
 
+## 46 [全排列](https://leetcode-cn.com/problems/permutations/)
+
+给定一个不含重复数字的数组 `nums` ，返回其 **所有可能的全排列** 。你可以 **按任意顺序** 返回答案。
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& nums, vector<bool>& used)
+    {
+        if(path.size() == nums.size())
+        {
+            ans.push_back(path);
+            return ;
+        }
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            if(used[i] == true) continue;
+            path.push_back(nums[i]);
+            used[i] = true;
+            backtracking(nums, used);
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> permute(vector<int>& nums) {
+        ans.clear();
+        path.clear();
+        vector<bool> used(nums.size(), false);
+        backtracking(nums, used);
+        return ans;
+    }
+};
+```
+
+## 47 [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+
+给定一个可包含重复数字的序列 `nums` ，**按任意顺序** 返回所有不重复的全排列。
+
+ 
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> path;
+
+    void backtracking(vector<int>& nums, vector<bool>& used)
+    {
+        if(path.size() == nums.size())
+        {
+            ans.push_back(path);
+            return ;
+        }
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            if(i > 0 && nums[i] == nums[i - 1] && used[i - 1] == false)
+                continue;
+
+            if(used[i] == true) continue;
+
+            path.push_back(nums[i]);
+            used[i] = true;
+            backtracking(nums, used);
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        ans.clear();
+        path.clear();
+        sort(nums.begin(), nums.end());
+        vector<bool> used(nums.size(), false);
+        backtracking(nums, used);
+
+        return ans;
+    }
+};
+```
+
+## 332 [重新安排行程](https://leetcode-cn.com/problems/reconstruct-itinerary/)
+
+给定一个机票的字符串二维数组 [from, to]，子数组中的两个成员分别表示飞机出发和降落的机场地点，对该行程进行重新规划排序。所有这些机票都属于一个从 JFK（肯尼迪国际机场）出发的先生，所以该行程必须从 JFK 开始。
+
+ 
+
+提示：
+
+如果存在多种有效的行程，请你按字符自然排序返回最小的行程组合。例如，行程 ["JFK", "LGA"] 与 ["JFK", "LGB"] 相比就更小，排序更靠前
+所有的机场都用三个大写字母表示（机场代码）。
+假定所有机票至少存在一种合理的行程。
+所有的机票必须都用一次 且 只能用一次。
+
+```c++
+class Solution {
+public:
+    unordered_map<string, map<string, int>> targets;
+
+    bool backtracking(int ticketNum, vector<string>& ans)
+    {
+        if(ans.size() == ticketNum + 1)
+        {
+            return true;
+        }
+
+        for(pair<const string, int>& target : targets[ans[ans.size() - 1]])
+        {
+            if(target.second > 0)
+            {
+                ans.push_back(target.first);
+                target.second--;
+                if(backtracking(ticketNum, ans)) return true;
+                target.second++;
+                ans.pop_back();
+            }
+        }
+        return false;
+    }
+
+
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        vector<string> ans;
+
+        for(const vector<string>& vec : tickets)
+        {
+            targets[vec[0]][vec[1]]++;
+        }
+        ans.push_back("JFK");
+        backtracking(tickets.size(), ans);
+        return ans;
+    }
+};
+```
+
+## 51 [N 皇后](https://leetcode-cn.com/problems/n-queens/)
+
+n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+
+给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+
+每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+
+```c++
+class Solution {
+public:
+    vector<vector<string>> ans;
+
+    void backtracking(int n, int row, vector<string>& chessboard)
+    {
+        if(row == n)
+        {
+            ans.push_back(chessboard);
+            return ;
+        }
+
+        for(int col = 0; col < n; col++)
+        {
+            if(isvalid(row, col, chessboard, n))
+            {
+                chessboard[row][col] = 'Q';
+                backtracking(n, row + 1, chessboard);
+                chessboard[row][col] = '.';
+            }
+        }
+    }
+
+    bool isvalid(int row, int col, vector<string>& chessboard, int n)
+    {
+        for(int i = 0; i < row; i++)
+        {
+            if(chessboard[i][col] == 'Q') 
+                return false;
+        }
+
+        for(int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--)
+        {
+            if(chessboard[i][j] == 'Q')
+                return false;
+        }
+
+        for(int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++)
+        {
+            if(chessboard[i][j] == 'Q')
+                return false;
+        }
+
+        return true;
+    }
+
+    vector<vector<string>> solveNQueens(int n) {
+        ans.clear();
+        vector<string> chessboard(n, string(n, '.'));
+
+        backtracking(n, 0, chessboard);
+        return ans;
+    }
+};
+```
+
+# 8、贪心
+
+## 455 [分发饼干](https://leetcode-cn.com/problems/assign-cookies/)
+
+假设你是一位很棒的家长，想要给你的孩子们一些小饼干。但是，每个孩子最多只能给一块饼干。
+
+对每个孩子 i，都有一个胃口值 g[i]，这是能让孩子们满足胃口的饼干的最小尺寸；并且每块饼干 j，都有一个尺寸 s[j] 。如果 s[j] >= g[i]，我们可以将这个饼干 j 分配给孩子 i ，这个孩子会得到满足。你的目标是尽可能满足越多数量的孩子，并输出这个最大数值。
+
+```c++
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int ans = 0;
+        int idx = s.size() - 1;
+        for(int i = g.size() - 1; i >= 0; i--)
+        {
+            if(idx >= 0 && g[i] <= s[idx])
+            {
+                ans++;
+                idx--;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 376 [摆动序列](https://leetcode-cn.com/problems/wiggle-subsequence/)
+
+如果连续数字之间的差严格地在正数和负数之间交替，则数字序列称为 摆动序列 。第一个差（如果存在的话）可能是正数或负数。仅有一个元素或者含两个不等元素的序列也视作摆动序列。
+
+例如， [1, 7, 4, 9, 2, 5] 是一个 摆动序列 ，因为差值 (6, -3, 5, -7, 3) 是正负交替出现的。
+
+相反，[1, 4, 7, 2, 5] 和 [1, 7, 4, 5, 5] 不是摆动序列，第一个序列是因为它的前两个差值都是正数，第二个序列是因为它的最后一个差值为零。
+子序列 可以通过从原始序列中删除一些（也可以不删除）元素来获得，剩下的元素保持其原始顺序。
+
+给你一个整数数组 nums ，返回 nums 中作为 摆动序列 的 最长子序列的长度 。
+
+```c++
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        int ans = 1;
+        int pre = 0;
+
+        for(int i = 1; i < nums.size(); i++)
+        {
+            int cur = nums[i] - nums[i - 1];
+            if((pre >= 0 && cur < 0) || (pre <= 0 && cur > 0))
+            {
+                ans++;
+                pre = cur;
+            }
+
+        }
+        return ans;
+    }
+};
+```
+
+## 53 [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+给定一个整数数组 `nums` ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+```c++
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int ans = INT_MIN;
+        int cur = 0;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            cur += nums[i];
+            if(cur > ans)
+            {
+                ans = cur;
+            }
+            if(cur < 0)
+            {
+                cur = 0;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 122 [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+给定一个数组 prices ，其中 prices[i] 是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int ans = 0;
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            int cur = prices[i] - prices[i - 1];
+            if(cur > 0)
+            {
+                ans += cur;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 55 [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+
+给定一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标。
+
+```c++
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int cover = nums[0];
+        if(nums.size() ==  1) return true;
+        for(int i = 0; i <= cover; i++)
+        {
+            cover = max(cover, i + nums[i]);
+            if(cover >= nums.size() - 1) return true;
+        }
+        return false;
+    }
+};
+```
+
+## 45 [跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii/)
+
+给定一个非负整数数组，你最初位于数组的第一个位置。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+你的目标是使用最少的跳跃次数到达数组的最后一个位置。
+
+假设你总是可以到达数组的最后一个位置。
+
+```c++
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int ans = 0;
+        int cur = 0;
+        int next = 0;
+
+        for(int i = 0; i < nums.size() - 1; i++)
+        {
+            next = max(nums[i] + i, next);
+            if(i == cur)
+            {
+                cur = next;
+                ans++;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 1005 [K 次取反后最大化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
+
+给定一个整数数组 A，我们只能用以下方法修改该数组：我们选择某个索引 i 并将 A[i] 替换为 -A[i]，然后总共重复这个过程 K 次。（我们可以多次选择同一个索引 i。）
+
+以这种方式修改数组后，返回数组可能的最大和。
+
+```c++
+class Solution {
+public:
+    bool static cmp(int a, int b)
+    {
+        return abs(a) > abs(b);
+    }
+
+    int largestSumAfterKNegations(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end(), cmp);
+
+        for(int i = 0; i < nums.size() && k > 0; i++)
+        {
+            if(k > 0 && nums[i] < 0)
+            {
+                nums[i] = -nums[i];
+                k--;
+            }
+        }
+
+        if(k != 0 && k % 2 == 1) nums[nums.size() - 1] *= -1;
+
+        int ans = 0;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            ans += nums[i];
+        } 
+        return ans;
+        
+    }
+};
+```
+
+## 134 [加油站](https://leetcode-cn.com/problems/gas-station/)
+
+在一条环路上有 N 个加油站，其中第 i 个加油站有汽油 gas[i] 升。
+
+你有一辆油箱容量无限的的汽车，从第 i 个加油站开往第 i+1 个加油站需要消耗汽油 cost[i] 升。你从其中的一个加油站出发，开始时油箱为空。
+
+如果你可以绕环路行驶一周，则返回出发时加油站的编号，否则返回 -1。
+
+说明: 
+
+如果题目有解，该答案即为唯一答案。
+输入数组均为非空数组，且长度相同。
+输入数组中的元素均为非负数。
+
+```c++
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int totalsum = 0;
+        int ans = 0;
+        int cur = 0;
+        for(int i = 0; i < gas.size(); i++)
+        {
+            totalsum += gas[i] - cost[i];
+            cur += gas[i] - cost[i];
+            if(cur < 0)
+            {
+                cur = 0;
+                ans = i + 1;
+            }
+        }
+        return totalsum < 0 ? -1 : ans;
+
+    }
+};
+```
+
