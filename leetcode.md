@@ -4252,3 +4252,269 @@ public:
 };
 ```
 
+## *406 [根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+
+假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
+
+请你重新构造并返回输入数组 people 所表示的队列。返回的队列应该格式化为数组 queue ，其中 queue[j] = [hj, kj] 是队列中第 j 个人的属性（queue[0] 是排在队列前面的人）。
+
+```c++
+class Solution {
+public:
+    static bool cmp(const vector<int> a, const vector<int>& b)
+    {
+        if(a[0] == b[0]) return a[1] < b[1];
+        else return a[0] > b[0];
+    }
+
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        sort(people.begin(), people.end(), cmp);
+        vector<vector<int>> ans;
+        for(int i = 0; i < people.size(); i++)
+        {
+            int pos = people[i][1];
+            ans.insert(ans.begin() + pos, people[i]);
+        }
+        return ans;
+    }
+};
+```
+
+## 452 [用最少数量的箭引爆气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+
+在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。由于它是水平的，所以纵坐标并不重要，因此只要知道开始和结束的横坐标就足够了。开始坐标总是小于结束坐标。
+
+一支弓箭可以沿着 x 轴从不同点完全垂直地射出。在坐标 x 处射出一支箭，若有一个气球的直径的开始和结束坐标为 xstart，xend， 且满足  xstart ≤ x ≤ xend，则该气球会被引爆。可以射出的弓箭的数量没有限制。 弓箭一旦被射出之后，可以无限地前进。我们想找到使得所有气球全部被引爆，所需的弓箭的最小数量。
+
+给你一个数组 points ，其中 points [i] = [xstart,xend] ，返回引爆所有气球所必须射出的最小弓箭数。
+
+```c++
+class Solution {
+public:
+    static bool cmp(vector<int>& a, vector<int>& b)
+    {
+        return a[0] < b[0];
+    }
+
+    int findMinArrowShots(vector<vector<int>>& points) {
+        if(points.size() == 0) return 0;
+        if(points.size() == 1) return 1;
+        sort(points.begin(), points.end(), cmp);
+
+        int end = points[0][1];
+        int ans = 1;
+        for(int i = 1; i < points.size(); i++)
+        {
+            if(points[i][0] <= end)
+            {
+                end = min(end, points[i][1]);
+            }
+            else
+            {
+                end = points[i][1];
+                ans++;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## *435 [无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+给定一个区间的集合，找到需要移除区间的最小数量，使剩余区间互不重叠。
+
+注意:
+
+可以认为区间的终点总是大于它的起点。
+区间 [1,2] 和 [2,3] 的边界相互“接触”，但没有相互重叠。
+
+（为什么选右边界）
+
+```c++
+class Solution {
+public:
+    static bool cmp(vector<int>& a, vector<int>& b)
+    {
+        return a[1] < b[1]; 
+    }
+
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        if(intervals.size() == 0 || intervals.size() == 1) return 0;
+        sort(intervals.begin(), intervals.end(), cmp);
+
+        int cnt = 1;
+        int end = intervals[0][1];
+        for(int i = 1; i < intervals.size(); i++)
+        {
+            if(end <= intervals[i][0])
+            {
+                cnt++;
+                end = intervals[i][1];
+            }
+
+        }
+        return intervals.size() - cnt;
+    }
+};
+```
+
+## 763 [划分字母区间](https://leetcode-cn.com/problems/partition-labels/)
+
+字符串 `S` 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
+
+```c++
+class Solution {
+public:
+    vector<int> partitionLabels(string s) {
+        unordered_map<char, int> map;
+
+        for(int i = 0; i < s.size(); i++)
+        {
+            map[s[i]] = i;
+        }
+        vector<int> ans;
+        int tmp = -1;
+        int pre = 0;
+        for(int i = 0; i < s.size(); i++)
+        {
+            tmp = max(tmp, map[s[i]]);
+            if(i == tmp)
+            {
+                ans.push_back(i + 1 - pre);
+                pre = i + 1;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 56 [合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+
+```c++
+class Solution {
+public:
+    static bool cmp(vector<int>& a, vector<int>& b)
+    {
+        return a[0] < b[0];
+    }
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end(), cmp);
+        if(intervals.size() == 1) return {intervals};
+        int begin = intervals[0][0];
+        int end = intervals[0][1];
+        vector<vector<int>> ans;
+        for(int i = 1; i < intervals.size(); i++)
+        {
+            if(end >= intervals[i][0])
+            {
+                end = max(end, intervals[i][1]);
+            }
+            else
+            {
+                ans.push_back({begin, end});
+                begin = intervals[i][0];
+                end = intervals[i][1];
+            }
+        }
+
+        ans.push_back({begin, end});
+
+        return ans;
+    }
+};
+```
+
+## 738 [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
+
+给定一个非负整数 N，找出小于或等于 N 的最大的整数，同时这个整数需要满足其各个位数上的数字是单调递增。
+
+（当且仅当每个相邻位数上的数字 x 和 y 满足 x <= y 时，我们称这个整数是单调递增的。）
+
+```c++
+class Solution {
+public:
+    int monotoneIncreasingDigits(int n) {
+        string num = to_string(n);
+        int flag = num.size();
+        for(int i = num.size() - 1; i > 0; i--)
+        {
+            if(num[i] < num[i - 1])
+            {
+                flag = i;
+                num[i - 1]--;
+
+            }
+        }
+
+        for(int i = flag; i < num.size(); i++)
+        {
+            num[i] = '9';
+        }
+        return stoi(num);
+    }
+};
+```
+
+## 714 [买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+给定一个整数数组 prices，其中第 i 个元素代表了第 i 天的股票价格 ；非负整数 fee 代表了交易股票的手续费用。
+
+你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。
+
+返回获得利润的最大值。
+
+注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int ans = 0;
+        int min_price = prices[0];
+        for(int i = 1 ; i < prices.size(); i++)
+        {
+            if(prices[i] < min_price) min_price = prices[i];
+            if(prices[i] > min_price + fee)
+            {
+                ans += prices[i] - min_price - fee;
+                min_price = prices[i] - fee;
+            }
+        }
+        return ans;
+    }
+};
+```
+
+# 9、动态规划
+
+## 509 [斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
+
+斐波那契数，通常用 F(n) 表示，形成的序列称为 斐波那契数列 。该数列由 0 和 1 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+给你 n ，请计算 F(n) 。
+
+```c++
+class Solution {
+public:
+    int fib(int n) {
+        if(n <= 1) return n;
+        vector<int> dp(2, 0);
+        dp[1] = 1;
+
+        for(int i = 2; i <= n; i++)
+        {
+            int sum = dp[0] + dp[1];
+            dp[0] = dp[1];
+            dp[1] = sum;
+        } 
+        return dp[1];
+    }
+};
+```
+
