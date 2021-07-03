@@ -4518,3 +4518,334 @@ public:
 };
 ```
 
+## 70 [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+
+假设你正在爬楼梯。需要 *n* 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+**注意：**给定 *n* 是一个正整数。
+
+```c++
+class Solution {
+public:
+    int climbStairs(int n) {
+        if(n <= 2) return n;
+        vector<int> dp(n + 1, 0);
+        dp[1] = 1;
+        dp[2] = 2; 
+        for(int i = 3; i <= n; i++)
+        {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+
+        return dp[n];
+    }
+};
+```
+
+## 746 [使用最小花费爬楼梯](https://leetcode-cn.com/problems/min-cost-climbing-stairs/)
+
+数组的每个下标作为一个阶梯，第 i 个阶梯对应着一个非负数的体力花费值 cost[i]（下标从 0 开始）。
+
+每当你爬上一个阶梯你都要花费对应的体力值，一旦支付了相应的体力值，你就可以选择向上爬一个阶梯或者爬两个阶梯。
+
+请你找出达到楼层顶部的最低花费。在开始时，你可以选择从下标为 0 或 1 的元素作为初始阶梯。
+
+```c++
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        vector<int> dp(cost.size(), 0);
+        dp[0] = cost[0];
+        dp[1] = cost[1];
+
+        for(int i = 2; i < cost.size(); i++)
+        {
+            dp[i] = min(dp[i - 1], dp[i - 2]) + cost[i];
+        }
+
+        return min(dp[cost.size() - 1], dp[cost.size() - 2]);
+    }
+};
+```
+
+## 62 [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+```c++
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+
+        for(int i = 0 ; i < m; i++)
+        {
+            dp[i][0] = 1;
+        }
+
+        for(int i = 0 ; i < n; i++)
+        {
+            dp[0][i] = 1;
+        }
+
+        for(int i = 1; i < m; i++)
+        {
+            for(int j = 1; j < n; j++)
+            {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+## 63 [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+
+```c++
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+
+        for(int i = 0; i < m && obstacleGrid[i][0] != 1; i++)
+        {
+            dp[i][0] = 1;
+        }
+
+        for(int i = 0; i < n && obstacleGrid[0][i] != 1; i++)
+        {
+            dp[0][i] = 1;
+        }
+
+        for(int i = 1; i < m; i++)
+        {
+            for(int j = 1; j < n; j++)
+            {
+                if(obstacleGrid[i][j] == 1) continue;
+                else
+                {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+## 343 [整数拆分](https://leetcode-cn.com/problems/integer-break/)
+
+给定一个正整数 *n*，将其拆分为**至少**两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+
+```c++
+class Solution {
+public:
+    int integerBreak(int n) {
+        // if(n < 4) return n - 1;
+        // int ans = 1;
+        // while(n > 4)
+        // {
+        //     n -= 3;
+        //     ans *= 3;
+        // }
+
+        // return ans * n;
+        vector<int> dp(n + 1);
+        dp[2] = 1;
+
+        for(int i = 3; i <= n; i++)
+        {
+            for(int j = 1; j < i - 1; j++) //dp[1]是没有意义的
+            {
+                dp[i] = max(dp[i], max(j * (i - j), j * dp[i - j]));
+            }
+        }
+        return dp[n];
+
+
+    }
+};
+```
+
+## *96 [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+
+给你一个整数 `n` ，求恰由 `n` 个节点组成且节点值从 `1` 到 `n` 互不相同的 **二叉搜索树** 有多少种？返回满足题意的二叉搜索树的种数。
+
+```c++
+class Solution {
+public:
+    int numTrees(int n) {
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        for(int i = 1; i <= n; i++)
+        {
+            for(int j = 1; j <= i; j++)
+            {
+                dp[i] += dp[i - j] * dp[j - 1];
+            }
+        }
+
+        return dp[n];
+    }
+};
+```
+
+## 416 [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+
+给你一个 **只包含正整数** 的 **非空** 数组 `nums` 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+二维方式
+
+```c++
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum = 0;
+        for(int i = 0 ; i < nums.size(); i++)
+        {
+            sum += nums[i];
+        }
+        if(sum % 2 == 1) return false;
+        int target = sum / 2;
+
+        vector<vector<int>> dp(nums.size(), vector<int>(target + 1, 0));
+
+        for(int i = nums[0]; i <= target; i++)
+        {
+            dp[0][i] = nums[0];
+        }
+
+        for(int i = 1; i < nums.size(); i++)
+        {
+            for(int j = 1; j <= target; j++)
+            {
+                if(j >= nums[i])
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - nums[i]] + nums[i]);
+                }
+                else
+                {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[nums.size() - 1][target] == target;
+  
+```
+
+一维方式
+
+```c++
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum = 0;
+        for(int i = 0 ; i < nums.size(); i++)
+        {
+            sum += nums[i];
+        }
+        if(sum % 2 == 1) return false;
+        int target = sum / 2;
+
+        vector<int> dp(target + 1, 0);
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            for(int j = target; j >= nums[i]; j--)
+            {
+                dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);
+            }
+        }
+
+        return dp[target] == target;
+    }
+};
+```
+
+## 1049 [最后一块石头的重量 II](https://leetcode-cn.com/problems/last-stone-weight-ii/)
+
+有一堆石头，用整数数组 stones 表示。其中 stones[i] 表示第 i 块石头的重量。
+
+每一回合，从中选出任意两块石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。那么粉碎的可能结果如下：
+
+如果 x == y，那么两块石头都会被完全粉碎；
+如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。
+最后，最多只会剩下一块 石头。返回此石头 最小的可能重量 。如果没有石头剩下，就返回 0。
+
+```c++
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& stones) {
+        int sum = 0;
+        for(int i = 0; i < stones.size(); i++)
+        {
+            sum += stones[i];
+        }
+
+        int target = sum / 2;
+
+        vector<int> dp(target + 1, 0);
+
+        for(int i = 0; i < stones.size(); i++)
+        {
+            for(int j = target; j >= stones[i]; j--)
+            {
+                dp[j] = max(dp[j], dp[j - stones[i]] + stones[i]);
+            }
+        }
+        return sum - dp[target] - dp[target];
+    }
+};
+```
+
+## 494 [目标和](https://leetcode-cn.com/problems/target-sum/)
+
+给你一个整数数组 nums 和一个整数 target 。
+
+向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+
+例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+
+```c++
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int sum = 0;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            sum += nums[i];
+        }
+
+        if((sum + target) % 2 == 1 || target > sum) return 0;
+        int size = (sum + target) / 2;
+        vector<int> dp(size + 1, 0);
+        dp[0] = 1;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            for(int j = size; j >= nums[i]; j--)
+            {
+                dp[j] += dp[j - nums[i]];
+            }
+        }
+        return dp[size];
+    }
+};
+```
+
