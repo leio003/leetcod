@@ -4849,3 +4849,215 @@ public:
 };
 ```
 
+## 474 [ 一和零](https://leetcode-cn.com/problems/ones-and-zeroes/)
+
+给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
+
+请你找出并返回 strs 的最大子集的大小，该子集中 最多 有 m 个 0 和 n 个 1 。
+
+如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
+
+```c++
+class Solution {
+public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+
+        for(string str : strs)
+        {
+            int zeronum = 0;
+            int onenum = 0;
+            for(char c : str)
+            {
+                if(c == '0') zeronum++;
+                else onenum++;
+            }
+
+            for(int i = m; i >= zeronum; i--)
+            {
+                for(int j = n; j >= onenum; j--)
+                {
+                    dp[i][j] = max(dp[i - zeronum][j - onenum] + 1, dp[i][j]);
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+};
+```
+
+## 518 [零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
+
+给你一个整数数组 coins 表示不同面额的硬币，另给一个整数 amount 表示总金额。
+
+请你计算并返回可以凑成总金额的硬币组合数。如果任何硬币组合都无法凑出总金额，返回 0 。
+
+假设每一种面额的硬币有无限个。 
+
+题目数据保证结果符合 32 位带符号整数。
+
+```c++
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        vector<int> dp(amount + 1, 0);
+        dp[0] = 1;
+        for(int i = 0; i < coins.size(); i++)
+        {
+            for(int j = coins[i]; j <= amount; j++)
+            {
+                dp[j] += dp[j - coins[i]];
+            }
+        }
+
+        return dp[amount];
+    }
+};
+```
+
+## 377 [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+
+给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
+
+题目数据保证答案符合 32 位整数范围。
+
+```c++
+class Solution {
+public:
+    int combinationSum4(vector<int>& nums, int target) {
+        vector<int> dp(target + 1, 0);
+        dp[0] = 1;
+        for(int j = 1; j <= target; j++)
+        {
+            for(int i = 0 ; i < nums.size(); i++)
+            {
+                if(j >= nums[i] && dp[j] < INT_MAX - dp[j - nums[i]])
+                    dp[j] += dp[j - nums[i]];
+            }
+        }
+
+        return dp[target];
+    }
+};
+```
+
+## 322 [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+```c++
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount + 1, amount + 1);
+
+        dp[0] = 0;
+
+        for(int i = 0; i < coins.size(); i++)
+        {
+            for(int j = 0; j <= amount; j++)
+            {
+                if(j >= coins[i])
+                    dp[j] = min(dp[j], dp[j - coins[i]] + 1);
+            }
+        }
+
+        return dp[amount] == amount + 1 ? -1 : dp[amount];
+    }
+};
+```
+
+## 279 [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+
+给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+
+给你一个整数 n ，返回和为 n 的完全平方数的 最少数量 。
+
+完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+
+ 
+
+```c++
+class Solution {
+public:
+    int numSquares(int n) {
+        vector<int> dp(n + 1, n + 1);
+        dp[0] = 0;
+        for(int i = 0; i <= n; i++)
+        {
+            for(int j = 1; j * j <= n; j++)
+            {
+                if(i >= j * j)
+                {
+                    dp[i] = min(dp[i], dp[i - j * j] + 1);
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+```
+
+## 139 [单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+说明：
+
+拆分时可以重复使用字典中的单词。
+你可以假设字典中没有重复的单词。
+
+```c++
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> word_set(wordDict.begin(), wordDict.end());
+
+        vector<bool> dp(s.size() + 1, false);
+        dp[0] = true;
+
+        for(int i = 1; i <= s.size(); i++)
+        {
+            for(int j = 0; j < i; j++)
+            {
+                string word = s.substr(j, i - j);
+
+                if(word_set.find(word) != word_set.end() && dp[j] == true)
+                {
+                    dp[i] = true;
+                }
+            }
+        }
+        return dp[s.size()];
+    }
+};
+```
+
+## 198 [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+```c++
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        if(nums.size() == 1) return nums[0];
+        vector<int> dp(nums.size());
+        dp[0] = nums[0];
+        dp[1] = max(nums[0], nums[1]);
+
+        for(int i = 2; i < nums.size(); i++)
+        {
+            dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+
+        return dp[nums.size() - 1];
+    }
+};
+```
+
