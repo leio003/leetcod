@@ -5061,3 +5061,201 @@ public:
 };
 ```
 
+## 213 [打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+
+你是一个专业的小偷，计划偷窃沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+
+```c++
+class Solution {
+public:
+    int robrange(vector<int>& nums, int beign, int end)
+    {
+        if(beign == end) return nums[beign];
+        vector<int> dp(nums.size());
+        dp[beign] = nums[beign];
+        dp[beign + 1] = max(nums[beign], nums[beign + 1]);
+
+        for(int i = beign + 2; i <= end; i++)
+        {
+            dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+        } 
+        return dp[end];
+    }
+
+
+    int rob(vector<int>& nums) {
+        if(nums.size() == 1) return nums[0];
+        int ans_1 = robrange(nums, 0, nums.size() - 2);
+        int ans_2 = robrange(nums, 1, nums.size() - 1);
+        return max(ans_1, ans_2);
+    }
+};
+```
+
+## ***337 [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+
+在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+
+计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+
+```c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int rob(TreeNode* root) {
+        vector<int> result = robTree(root);
+        return max(result[0], result[1]);
+    }
+    // 长度为2的数组，0：不偷，1：偷
+    vector<int> robTree(TreeNode* cur) {
+        if (cur == NULL) return vector<int>{0, 0};
+        vector<int> left = robTree(cur->left);
+        vector<int> right = robTree(cur->right);
+        // 偷cur
+        int val1 = cur->val + left[0] + right[0];
+        // 不偷cur
+        int val2 = max(left[0], left[1]) + max(right[0], right[1]);
+        return {val2, val1};
+    }
+};
+```
+
+## 121 [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(prices.size(), vector<int>(2));
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            dp[i][0] = max(dp[i - 1][0], -prices[i]);
+
+            dp[i][1] = max(dp[i - 1][0] + prices[i], dp[i - 1][1]);
+        }
+
+        return dp[prices.size() - 1][1];
+    }
+};
+```
+
+## 122 [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+给定一个数组 prices ，其中 prices[i] 是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(prices.size(), vector<int>(2));
+
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        } 
+
+        return dp[prices.size() - 1][1];
+    }
+};
+```
+
+## 123 [买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+
+给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+```
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(prices.size(), vector<int>(4, 0));
+
+        dp[0][0] = -prices[0];
+        dp[0][2] = -prices[0];
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            dp[i][0] = max(dp[i - 1][0], -prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+            dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] - prices[i]);
+            dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] + prices[i]);
+        }
+
+        return dp[prices.size() - 1][3];
+    }
+};
+```
+
+## 188 [买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
+
+给定一个整数数组 prices ，它的第 i 个元素 prices[i] 是一支给定的股票在第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+```c++
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        if(prices.size() == 0 || k == 0) return 0;
+        vector<vector<int>> dp(prices.size(), vector<int>(2 * k + 1, 0));
+
+        for(int i = 0; i < k; i++)
+        {
+            dp[0][i * 2 + 1] = -prices[0];
+        }
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            dp[i][0] = dp[i - 1][0];
+            for(int j = 1; j <= 2 * k; j++)
+            {
+                if(j % 2 == 1)
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - 1] - prices[i]);
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - 1] + prices[i]);
+                }
+            }
+        }
+
+        return dp[prices.size() - 1][2 * k];
+    }
+};
+```
+
