@@ -5259,3 +5259,152 @@ public:
 };
 ```
 
+## 309 [最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+
+给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。
+
+设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+
+你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(prices.size(), vector<int>(4, 0));
+
+        dp[0][0] = -prices[0];
+
+        for(int i = 1; i < prices.size(); i++)
+        {
+            dp[i][0] = max(dp[i  -1][0], max(dp[i - 1][1], dp[i - 1][3]) - prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][3]);
+            dp[i][2] = dp[i - 1][0] + prices[i];
+            dp[i][3] = dp[i - 1][2];
+        }
+
+        return max(dp[prices.size() - 1][3], max(dp[prices.size() - 1][1], dp[prices.size() - 1][2]));
+        
+    }
+};
+```
+
+## 300 [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+```c++
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if(nums.size() == 1) return 1;
+        vector<int> dp(nums.size(), 1);
+        int ans = INT_MIN;
+        for(int i = 1; i < nums.size(); i++)
+        {
+            for(int j = 0; j < i; j++)
+            {
+                if(nums[i] > nums[j])
+                {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = max(ans, dp[i]);
+        }
+
+        return ans;
+    }
+};
+```
+
+## 674 [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
+
+给定一个未经排序的整数数组，找到最长且 连续递增的子序列，并返回该序列的长度。
+
+连续递增的子序列 可以由两个下标 l 和 r（l < r）确定，如果对于每个 l <= i < r，都有 nums[i] < nums[i + 1] ，那么子序列 [nums[l], nums[l + 1], ..., nums[r - 1], nums[r]] 就是连续递增子序列
+
+```c++
+class Solution {
+public:
+    int findLengthOfLCIS(vector<int>& nums) {
+        if(nums.size() == 1) return 1;
+        vector<int> dp(nums.size(), 1);
+        int ans = INT_MIN;
+        for(int i = 1; i < nums.size(); i++)
+        {
+            if(nums[i] > nums[i - 1])
+            {
+                dp[i] = dp[i - 1] + 1;
+            }
+            ans = max(dp[i], ans);
+        }
+
+        return ans;
+    }
+};
+```
+
+## 718 [最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+
+给两个整数数组 `A` 和 `B` ，返回两个数组中公共的、长度最长的子数组的长度。
+
+```c++
+class Solution {
+public:
+    int findLength(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> dp(nums1.size() + 1, vector<int>(nums2.size() + 1, 0));
+        int ans = INT_MIN;
+        for(int i = 1; i <= nums1.size(); i++)
+        {
+            for(int j = 1; j <= nums2.size(); j++)
+            {
+                if(nums1[i - 1] == nums2[j - 1])
+                {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                ans = max(ans, dp[i][j]);
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+## 1143 [最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+
+```c++
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        vector<vector<int>> dp(text1.size() + 1, vector<int>(text2.size() + 1));
+
+        for(int i = 1; i <= text1.size(); i++)
+        {
+            for(int j = 1; j <= text2.size(); j++)
+            {
+                if(text1[i - 1] == text2[j - 1])
+                {
+                    dp[i][j] = dp[i - 1][j  - 1] + 1;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[text1.size()][text2.size()];
+    }
+};
+```
+
